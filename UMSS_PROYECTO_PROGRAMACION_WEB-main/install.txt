@@ -1,0 +1,759 @@
+===========================
+PASOS DE INSTALACIÓN
+===========================
+1)Clonar el repositorio
+2)Instalar dependencias: npm install
+
+
+===========================
+CONFIGURACIÓN DEL ENTORNO
+===========================
+1)Crear un archivo llamado .env en la raiz del proyecto, al mismo nivel que la carpeta "src"
+
+2)Agregar las siguientes variables al archivo .env:
+  (En caso de querer conectar con su propia base de datos)
+  DATABASE_URI=mongodb+srv://<usuario>:<password>@<cluster>/<database>?retryWrites=true&w=majority&appName=<nombre> 
+  (En caso de querer conectar con la base de datos creada por defecto)
+  DATABASE_URI=mongodb+srv://zerotimesnegativeone:negativezero@cluster0.wfgbxwp.mongodb.net/sp_project?retryWrites=true&w=majority&appName=Cluster0 
+  PORT=5000
+  JWT_SECRET="clave_secreta"
+
+  La variable DATABASE_URI se obtiene desde MongoDB Atlas:
+  Database → Connect → Connect your application
+
+
+===========================
+CERTIFICADOS HTTPS (LOCAL)
+===========================
+1) Asegúrese de tener instalado OpenSSL.
+   El proyecto usa HTTPS en local, por lo que necesita generar los archivos del certificado
+   (ej.: cert/server.key y cert/server.crt). Si no existen, el servidor no iniciará y mostrará
+   un error ENOENT indicando que no se encontró el archivo server.key.
+
+2) Generar certificados:
+   - En Linux/macOS funciona directamente:
+       npm run generate-cert
+
+   - En Windows(PowerShell/CMD) puede fallar con: "sh is not recognized" porque Windows no incluye 'sh' por defecto.Por lo tanto, debe abrir Git Bash en la carpeta del proyecto y ejecutar:
+       MSYS_NO_PATHCONV=1 npm run generate-cert
+
+===========================
+EJECUCIÓN DEL PROYECTO
+===========================
+Una vez realizados los pasos anteriores ,usted ya puede levantar el servidor y ejecutarlo mediante el comando: npm run dev 
+Esto da como resultado en consola la confirmacion de la conexion exitosa con la base de datos y el puerto donde se esta ejecutando.
+
+En caso de querer poblar la base de datos, seguir los pasos de la etapa de POBLAR LA BASE DE DATOS y volver a correr el servidor mediante npm run dev.
+
+ 
+===========================
+POBLAR LA BASE DE DATOS
+===========================
+Para crear datos de prueba en la base de datos ejecutar: node scripts/data_base.js
+Este script elimina los datos existentes y crea los datos necesarios para el funcionamiento del sistema.
+
+
+===========================
+PRUEBA DE ENDPOINTS EN POSTMAN
+===========================
+
+BASE URL:
+https://localhost:5000
+
+NOTA DE HEADERS (ENDPOINTS PROTEGIDOS):
+En Postman -> Headers:
+Content-Type: application/json
+Authorization: Bearer <TOKEN_AQUI>
+
+**************************************************
+USUARIOS (AUTH)
+**************************************************
+
+POST (CREAR USUARIO / REGISTRAR)
+POST https://localhost:5000/api/auth/register
+
+Headers:
+Content-Type: application/json
+
+Body (raw -> JSON):
+{
+  "nombre": "Leonel Estudiante",
+  "correo": "leonel@est.com",
+  "password": "123456",
+  "handle_name": "leonel_est",
+  "id_rol": "693c833495b808e500f5bb78"
+}
+
+Respuesta esperada (ejemplo):
+{
+    "message": "Usuario registrado exitosamente",
+    "usuarioNuevo": {
+        "nombre": "Leonel Estudiante",
+        "correo": "leonel@est.com",
+        "handle_name": "leonel_est",
+        "activo": true,
+        "id_rol": "693c833495b808e500f5bb78",
+        "_id": "693c8b584d1251a6931f3916",
+        "createdAt": "2025-12-12T21:38:32.317Z",
+        "updatedAt": "2025-12-12T21:38:32.317Z",
+        "__v": 0
+    }
+}
+
+
+POST (LOGIN / OBTENER TOKEN)
+POST https://localhost:5000/api/auth/login
+
+Headers:
+Content-Type: application/json
+
+Body (raw -> JSON):
+{
+  "correo": "leonel@est.com",
+  "password": "123456"
+}
+
+Respuesta esperada (ejemplo):
+{
+    "message": "Login exitoso",
+    "token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5M2M4YjU4NGQxMjUxYTY5MzFmMzkxNiIsInJvbGUiOiJlc3R1ZGlhbnRlIiwiaGFuZGxlIjoibGVvbmVsX2VzdCIsImlhdCI6MTc2NTU3NTU4OCwiZX",
+    "usuarioExistente": {
+        "_id": "693c8b584d1251a6931f3916",
+        "nombre": "Leonel Estudiante",
+        "correo": "leonel@est.com",
+        "handle_name": "leonel_est",
+        "activo": true,
+        "id_rol": {
+            "_id": "693c833495b808e500f5bb78",
+            "nombre_rol": "estudiante",
+            "desc_rol": "Responde formularios",
+            "activo": true,
+            "__v": 0,
+            "createdAt": "2025-12-12T21:03:48.778Z",
+            "updatedAt": "2025-12-12T21:03:48.778Z"
+        },
+        "createdAt": "2025-12-12T21:38:32.317Z",
+        "updatedAt": "2025-12-12T21:38:32.317Z",
+        "__v": 0
+    }
+}
+
+
+GET (OBTENER LISTA DE USUARIOS)
+GET https://localhost:5000/api/auth/usuarios
+
+Headers:
+Content-Type: application/json
+
+Respuesta esperada (ejemplo):
+[
+  {
+        "_id": "693c833595b808e500f5bbd0",
+        "nombre": "Ana Lopez",
+        "edad": 19,
+        "correo": "ana.lopez@demo.com",
+        "handle_name": "ana_lopez",
+        "activo": true,
+        "id_rol": {
+            "_id": "693c833495b808e500f5bb78",
+            "nombre_rol": "estudiante",
+            "desc_rol": "Responde formularios",
+            "activo": true,
+            "__v": 0,
+            "createdAt": "2025-12-12T21:03:48.778Z",
+            "updatedAt": "2025-12-12T21:03:48.778Z"
+        },
+        "__v": 0,
+        "createdAt": "2025-12-12T21:03:49.920Z",
+        "updatedAt": "2025-12-12T21:03:49.920Z"
+    },
+    {
+        "_id": "693c833595b808e500f5bbd1",
+        "nombre": "Carlos Rivera",
+        "edad": 27,
+        "correo": "carlos.rivera@demo.com",
+        "handle_name": "carlos_rivera",
+        "activo": true,
+        "id_rol": {
+            "_id": "693c833495b808e500f5bb7a",
+            "nombre_rol": "profesor",
+            "desc_rol": "Crea y gestiona formularios",
+            "activo": true,
+            "__v": 0,
+            "createdAt": "2025-12-12T21:03:48.781Z",
+            "updatedAt": "2025-12-12T21:03:48.781Z"
+        },
+        "__v": 0,
+        "createdAt": "2025-12-12T21:03:49.920Z",
+        "updatedAt": "2025-12-12T21:03:49.920Z"
+    }
+]
+
+**************************************************
+NIVELES DE DIFICULTAD (PROTEGIDO: TOKEN)
+**************************************************
+
+GET (OBTENER TODOS)
+GET https://localhost:5000/api/niveles-dificultad
+
+Headers:
+Content-Type: application/json
+Authorization: Bearer <TOKEN_AQUI>
+
+Respuesta esperada (ejemplo):
+{
+  "message": "Lista obtenida correctamente",
+  "status": 200,
+  "data": [
+    {
+       "_id": "693c833595b808e500f5bbbd",
+       "nom_nivel": "Difícil",
+       "desc_nivel": "Nivel Difícil",
+       "__v": 0,
+       "createdAt": "2025-12-12T21:03:49.347Z",
+       "updatedAt": "2025-12-12T21:03:49.347Z"
+     }
+  ]
+}
+
+
+GET (OBTENER POR ID)
+GET https://localhost:5000/api/niveles-dificultad/<ID_NIVEL>
+
+Headers:
+Content-Type: application/json
+Authorization: Bearer <TOKEN_AQUI>
+
+Respuesta esperada (ejemplo):
+{
+  "message": "Nivel obtenido correctamente",
+  "status": 200,
+  "data": {
+        "_id": "693c833595b808e500f5bbbd",
+        "nom_nivel": "Difícil",
+        "desc_nivel": "Nivel Difícil",
+        "__v": 0,
+        "createdAt": "2025-12-12T21:03:49.347Z",
+        "updatedAt": "2025-12-12T21:03:49.347Z"
+   }
+}
+
+
+POST (CREAR)
+POST https://localhost:5000/api/niveles-dificultad
+
+Headers:
+Content-Type: application/json
+Authorization: Bearer <TOKEN_AQUI>
+
+Body (raw -> JSON):
+{
+  "nom_nivel": "Extremo",
+  "desc_nivel": "Nivel extremadamente dificil"
+}
+
+Respuesta esperada (ejemplo):
+{
+  "message": "Nivel creado correctamente",
+  "status": 201,
+  "data": {
+    "_id": "66a000000000000000000010",
+    "nom_nivel": "Extremo",
+    "desc_nivel": "Nivel extremadamente dificil",
+    "createdAt": "2025-12-12T12:05:00.000Z",
+    "updatedAt": "2025-12-12T12:05:00.000Z",
+    "__v": 0
+  }
+}
+
+
+PUT (ACTUALIZAR)
+PUT https://localhost:5000/api/niveles-dificultad/<ID_NIVEL>
+
+Headers:
+Content-Type: application/json
+Authorization: Bearer <TOKEN_AQUI>
+
+Body (raw -> JSON):
+{
+  "desc_nivel": "Actualizacion del nivel"
+}
+
+Respuesta esperada (ejemplo):
+{
+  "message": "Nivel actualizado correctamente",
+  "status": 200,
+  "data": {
+    "_id": "66a000000000000000000001",
+    "nom_nivel": "Fácil",
+    "desc_nivel": "Actualizacion del nivel",
+    "createdAt": "2025-12-12T12:00:00.000Z",
+    "updatedAt": "2025-12-12T12:10:00.000Z",
+    "__v": 0
+  }
+}
+
+
+DELETE (ELIMINAR)
+DELETE https://localhost:5000/api/niveles-dificultad/<ID_NIVEL>
+
+Headers:
+Content-Type: application/json
+Authorization: Bearer <TOKEN_AQUI>
+
+Respuesta esperada (ejemplo):
+{
+  "message": "Nivel eliminado correctamente",
+  "status": 200
+}
+
+
+**************************************************
+ROL (PROTEGIDO: TOKEN + ROL ADMINISTRADOR)
+**************************************************
+
+GET (OBTENER TODOS)
+GET https://localhost:5000/api/rol
+
+Headers:
+Content-Type: application/json
+Authorization: Bearer <TOKEN_ADMIN_AQUI>
+
+Respuesta esperada (ejemplo):
+{
+  "roles": [
+    {
+      "_id": "66a000000000000000000101",
+      "nombre_rol": "administrador",
+      "desc_rol": "Administra el sistema",
+      "activo": true,
+      "createdAt": "2025-12-12T12:00:00.000Z",
+      "updatedAt": "2025-12-12T12:00:00.000Z",
+      "__v": 0
+    }
+  ],
+  "total": 1
+}
+
+
+POST (CREAR)
+POST https://localhost:5000/api/rol
+
+Headers:
+Content-Type: application/json
+Authorization: Bearer <TOKEN_ADMIN_AQUI>
+
+Body (raw -> JSON):
+{
+  "nombre_rol": "moderador",
+  "desc_rol": "Gestiona contenido y revisa formularios",
+  "activo": true
+}
+
+Respuesta esperada (ejemplo):
+{
+  "succeed": true,
+  "rol": {
+    "_id": "66a000000000000000000120",
+    "nombre_rol": "moderador",
+    "desc_rol": "Gestiona contenido y revisa formularios",
+    "activo": true,
+    "createdAt": "2025-12-12T12:20:00.000Z",
+    "updatedAt": "2025-12-12T12:20:00.000Z",
+    "__v": 0
+  }
+}
+
+
+**************************************************
+CATEGORIAS (PROTEGIDO: TOKEN + ROL ADMINISTRADOR O PROFESOR)
+**************************************************
+
+GET (OBTENER TODAS)
+GET https://localhost:5000/api/categorias
+
+Headers:
+Content-Type: application/json
+Authorization: Bearer <TOKEN_ADMIN_O_PROFESOR_AQUI>
+
+Respuesta esperada (ejemplo):
+{
+  "success": true,
+  "data": [
+    {
+      "_id": "66a000000000000000000201",
+      "nom_cat": "Matematicas",
+      "desc_cat": "Materia orientada al razonamiento lógico,cálculo y resolución de problemas matemáticos",
+      "sigla": "MAT",
+      "createdAt": "2025-12-12T12:00:00.000Z",
+      "updatedAt": "2025-12-12T12:00:00.000Z",
+      "__v": 0
+    }
+  ],
+  "total": 1
+}
+
+
+GET (OBTENER POR ID)
+GET https://localhost:5000/api/categorias/<ID_CATEGORIA>
+
+Headers:
+Content-Type: application/json
+Authorization: Bearer <TOKEN_ADMIN_O_PROFESOR_AQUI>
+
+Respuesta esperada (ejemplo):
+{
+  "success": true,
+  "data": {
+    "_id": "66a000000000000000000201",
+    "nom_cat": "Matematicas",
+    "desc_cat": "Materia orientada al razonamiento lógico,cálculo y resolución de problemas matemáticos",
+    "sigla": "MAT",
+    "createdAt": "2025-12-12T12:00:00.000Z",
+    "updatedAt": "2025-12-12T12:00:00.000Z",
+    "__v": 0
+  }
+}
+
+
+POST (CREAR)
+POST https://localhost:5000/api/categorias
+
+Headers:
+Content-Type: application/json
+Authorization: Bearer <TOKEN_ADMIN_O_PROFESOR_AQUI>
+
+Body (raw -> JSON):
+{
+  "nom_cat": "Arte",
+  "desc_cat": "Materia enfocada en expresion artistica",
+  "sigla": "ART"
+}
+
+Respuesta esperada (ejemplo):
+{
+  "success": true,
+  "message": "Categoría creada exitosamente",
+  "data": {
+    "_id": "66a000000000000000000210",
+    "nom_cat": "Arte",
+    "desc_cat": "Materia enfocada en expresion artistica",
+    "sigla": "ART",
+    "createdAt": "2025-12-12T12:30:00.000Z",
+    "updatedAt": "2025-12-12T12:30:00.000Z",
+    "__v": 0
+  }
+}
+
+
+PUT (ACTUALIZAR)
+PUT https://localhost:5000/api/categorias/<ID_CATEGORIA>
+
+Headers:
+Content-Type: application/json
+Authorization: Bearer <TOKEN_ADMIN_O_PROFESOR_AQUI>
+
+Body (raw -> JSON):
+{
+  "desc_cat": "Actualizacion de descripcion"
+}
+
+Respuesta esperada (ejemplo):
+{
+  "success": true,
+  "message": "Categoría actualizada exitosamente",
+  "data": {
+    "_id": "66a000000000000000000201",
+    "nom_cat": "Matematicas",
+    "desc_cat": "Actualizacion de descripcion",
+    "sigla": "MAT",
+    "createdAt": "2025-12-12T12:00:00.000Z",
+    "updatedAt": "2025-12-12T12:35:00.000Z",
+    "__v": 0
+  }
+}
+
+
+DELETE (ELIMINAR)
+DELETE https://localhost:5000/api/categorias/<ID_CATEGORIA>
+
+Headers:
+Content-Type: application/json
+Authorization: Bearer <TOKEN_ADMIN_O_PROFESOR_AQUI>
+
+Respuesta esperada (ejemplo):
+{
+  "success": true,
+  "message": "Categoría eliminada exitosamente",
+  "data": {
+    "_id": "66a000000000000000000201",
+    "nom_cat": "Matematicas",
+    "desc_cat": "Materia orientada al razonamiento lógico,cálculo y resolución de problemas matemáticos",
+    "sigla": "MAT",
+    "createdAt": "2025-12-12T12:00:00.000Z",
+    "updatedAt": "2025-12-12T12:35:00.000Z",
+    "__v": 0
+  }
+}
+
+
+**************************************************
+SUBCATEGORIAS (PROTEGIDO: TOKEN + ROL ADMINISTRADOR O PROFESOR)
+**************************************************
+
+GET (OBTENER TODAS)
+GET https://localhost:5000/api/subcategorias
+
+Headers:
+Content-Type: application/json
+Authorization: Bearer <TOKEN_ADMIN_O_PROFESOR_AQUI>
+
+Respuesta esperada (ejemplo):
+{
+  "success": true,
+  "data": [
+    {
+      "_id": "66a000000000000000000301",
+      "nom_subcat": "Algebra",
+      "desc_subcat": "Uso de expresiones, ecuaciones y relaciones entre variables",
+      "sigla": "MAT_ALG",
+      "id_cat": "66a000000000000000000201",
+      "createdAt": "2025-12-12T12:00:00.000Z",
+      "updatedAt": "2025-12-12T12:00:00.000Z",
+      "__v": 0
+    }
+  ],
+  "total": 1
+}
+
+
+GET (OBTENER POR ID)
+GET https://localhost:5000/api/subcategorias/<ID_SUBCATEGORIA>
+
+Headers:
+Content-Type: application/json
+Authorization: Bearer <TOKEN_ADMIN_O_PROFESOR_AQUI>
+
+Respuesta esperada (ejemplo):
+{
+  "success": true,
+  "data": {
+    "_id": "66a000000000000000000301",
+    "nom_subcat": "Algebra",
+    "desc_subcat": "Uso de expresiones, ecuaciones y relaciones entre variables",
+    "sigla": "MAT_ALG",
+    "id_cat": "66a000000000000000000201",
+    "createdAt": "2025-12-12T12:00:00.000Z",
+    "updatedAt": "2025-12-12T12:00:00.000Z",
+    "__v": 0
+  }
+}
+
+
+POST (CREAR)
+POST https://localhost:5000/api/subcategorias
+
+Headers:
+Content-Type: application/json
+Authorization: Bearer <TOKEN_ADMIN_O_PROFESOR_AQUI>
+
+Body (raw -> JSON):
+{
+  "nom_subcat": "Pintura",
+  "desc_subcat": "Tecnicas basicas de pintura",
+  "sigla": "ART_PIN",
+  "id_cat": "<ID_CATEGORIA>"
+}
+
+Respuesta esperada (ejemplo):
+{
+  "success": true,
+  "message": "Subcategoría creada exitosamente",
+  "data": {
+    "_id": "66a000000000000000000310",
+    "nom_subcat": "Pintura",
+    "desc_subcat": "Tecnicas basicas de pintura",
+    "sigla": "ART_PIN",
+    "id_cat": "66a000000000000000000210",
+    "createdAt": "2025-12-12T12:40:00.000Z",
+    "updatedAt": "2025-12-12T12:40:00.000Z",
+    "__v": 0
+  }
+}
+
+
+PUT (ACTUALIZAR)
+PUT https://localhost:5000/api/subcategorias/<ID_SUBCATEGORIA>
+
+Headers:
+Content-Type: application/json
+Authorization: Bearer <TOKEN_ADMIN_O_PROFESOR_AQUI>
+
+Body (raw -> JSON):
+{
+  "desc_subcat": "Actualizacion de descripcion"
+}
+
+Respuesta esperada (ejemplo):
+{
+  "success": true,
+  "message": "Subcategoría actualizada exitosamente",
+  "data": {
+    "_id": "66a000000000000000000301",
+    "nom_subcat": "Algebra",
+    "desc_subcat": "Actualizacion de descripcion",
+    "sigla": "MAT_ALG",
+    "id_cat": "66a000000000000000000201",
+    "createdAt": "2025-12-12T12:00:00.000Z",
+    "updatedAt": "2025-12-12T12:45:00.000Z",
+    "__v": 0
+  }
+}
+
+
+DELETE (ELIMINAR)
+DELETE https://localhost:5000/api/subcategorias/<ID_SUBCATEGORIA>
+
+Headers:
+Content-Type: application/json
+Authorization: Bearer <TOKEN_ADMIN_O_PROFESOR_AQUI>
+
+Respuesta esperada (ejemplo):
+{
+  "success": true,
+  "message": "Subcategoría eliminada exitosamente",
+  "data": {
+    "_id": "66a000000000000000000301",
+    "nom_subcat": "Algebra",
+    "desc_subcat": "Uso de expresiones, ecuaciones y relaciones entre variables",
+    "sigla": "MAT_ALG",
+    "id_cat": "66a000000000000000000201",
+    "createdAt": "2025-12-12T12:00:00.000Z",
+    "updatedAt": "2025-12-12T12:45:00.000Z",
+    "__v": 0
+  }
+}
+
+
+**************************************************
+RANGOS DE EDAD (NO PROTEGIDO)
+**************************************************
+
+GET (OBTENER TODOS)
+GET https://localhost:5000/api/rangos-edad
+
+Headers:
+Content-Type: application/json
+
+Respuesta esperada (ejemplo):
+{
+  "message": "Lista obtenida correctamente",
+  "status": 200,
+  "data": [
+    {
+      "_id": "66a000000000000000000401",
+      "desc_rango": "Niñez temprana (6-7)",
+      "edad_inicio": 6,
+      "edad_fin": 7,
+      "createdAt": "2025-12-12T12:00:00.000Z",
+      "updatedAt": "2025-12-12T12:00:00.000Z",
+      "__v": 0
+    }
+  ]
+}
+
+
+GET (OBTENER POR ID)
+GET https://localhost:5000/api/rangos-edad/<ID_RANGO>
+
+Headers:
+Content-Type: application/json
+
+Respuesta esperada (ejemplo):
+{
+  "status": 200,
+  "message": "Rango obtenido correctamente",
+  "data": {
+    "_id": "66a000000000000000000401",
+    "desc_rango": "Niñez temprana (6-7)",
+    "edad_inicio": 6,
+    "edad_fin": 7,
+    "createdAt": "2025-12-12T12:00:00.000Z",
+    "updatedAt": "2025-12-12T12:00:00.000Z",
+    "__v": 0
+  }
+}
+
+
+POST (CREAR)
+POST https://localhost:5000/api/rangos-edad
+
+Headers:
+Content-Type: application/json
+
+Body (raw -> JSON):
+{
+  "desc_rango": "Adulto joven (20-24)",
+  "edad_inicio": 20,
+  "edad_fin": 24
+}
+
+Respuesta esperada (ejemplo):
+{
+  "message": "Rango creado correctamente",
+  "status": 201,
+  "data": {
+    "_id": "66a000000000000000000410",
+    "desc_rango": "Adulto joven (20-24)",
+    "edad_inicio": 20,
+    "edad_fin": 24,
+    "createdAt": "2025-12-12T12:50:00.000Z",
+    "updatedAt": "2025-12-12T12:50:00.000Z",
+    "__v": 0
+  }
+}
+
+
+PUT (ACTUALIZAR)
+PUT https://localhost:5000/api/rangos-edad/<ID_RANGO>
+
+Headers:
+Content-Type: application/json
+
+Body (raw -> JSON):
+{
+  "desc_rango": "Adulto joven (20-24)",
+  "edad_inicio": 20,
+  "edad_fin": 24
+}
+
+Respuesta esperada (ejemplo):
+{
+  "status": 200,
+  "message": "Rango actualizado correctamente",
+  "data": {
+    "_id": "66a000000000000000000401",
+    "desc_rango": "Adulto joven (20-24)",
+    "edad_inicio": 20,
+    "edad_fin": 24,
+    "createdAt": "2025-12-12T12:00:00.000Z",
+    "updatedAt": "2025-12-12T12:55:00.000Z",
+    "__v": 0
+  }
+}
+
+
+DELETE (ELIMINAR)
+DELETE https://localhost:5000/api/rangos-edad/<ID_RANGO>
+
+Headers:
+Content-Type: application/json
+
+Respuesta esperada (ejemplo):
+{
+  "message": "Rango eliminado correctamente",
+  "status": 200
+}
+
+
+

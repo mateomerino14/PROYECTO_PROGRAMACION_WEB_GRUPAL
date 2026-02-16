@@ -1,0 +1,30 @@
+{
+  "name": "proyecto_rogramacion_web",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Proyecto Semestral de Programacion Web",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "node src/index.js",
+    "generate-cert": "sh ./scripts/generate-cert.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MAT988/UMSS_PROYECTO_PROGRAMACION_WEB.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MAT988/UMSS_PROYECTO_PROGRAMACION_WEB/issues"
+  },
+  "homepage": "https://github.com/MAT988/UMSS_PROYECTO_PROGRAMACION_WEB#readme",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^9.0.0",
+    "spdy": "^4.0.2"
+  }
+}
